@@ -1,0 +1,12 @@
+---
+name: Design tokens — warm light theme
+description: Light theme with warm off-white bg, white cards, dark navy text, no shadows, pill radii
+type: design
+---
+Background: #f0ede6 (warm off-white). Cards: #ffffff. Primary text: #0d1b2a. Muted: #9b9690. Border: #e0ddd5.
+Primary = #0d1b2a (dark navy). Primary-foreground = #f5f3ee.
+No shadows anywhere — cards defined by 0.5px border.
+Radii: large cards 16px, metric cards 14px, badges/buttons/inputs pill (rounded-full), icon bg 10px.
+Typography: Inter 400-900. Page headings: 28-30px font-extrabold tracking-[-0.03em]. Eyebrow labels: 11px font-semibold uppercase tracking-[0.1em]. Metrics: 32px font-black tracking-[-0.04em]. Body: 13px.
+Brand accents unchanged: gold #c9a84c, crimson #a0192f, blue #3d8bcd, sage #6b8f71.
+Light-mode only (no .dark class on html).

@@ -13,7 +13,7 @@ interface PriorityCardProps {
 export function PriorityCard({ title, description, brand, brandAccent, action, onClick }: PriorityCardProps) {
   return (
     <Card
-      className="border-border/50 bg-card/40 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-accent/30"
+      className="cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-accent/30"
       onClick={onClick}
     >
       <CardContent className="p-5">
@@ -22,10 +22,10 @@ export function PriorityCard({ title, description, brand, brandAccent, action, o
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: brandAccent }}
           />
-          <span className="text-xs font-medium text-muted-foreground">{brand}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{brand}</span>
         </div>
-        <h3 className="text-sm font-medium text-foreground mb-1.5">{title}</h3>
-        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+        <h3 className="text-sm font-bold tracking-[-0.01em] text-foreground mb-1.5">{title}</h3>
+        <p className="text-[13px] text-muted-foreground leading-relaxed">{description}</p>
         {action && (
           <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
             {action}
