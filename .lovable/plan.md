@@ -1,39 +1,25 @@
 
 
-# Editable Brand Canon — Plan
+# Two Small Fixes
 
-## Summary
+## 1. Settings page — Add "Manage brand canons" link
 
-Replace the read-only canon toggle with an inline editor that persists canon overrides to localStorage and updates the brand context so all generation prompts use the edited canon.
+In `src/routes/_app.settings.tsx`, replace the placeholder text in the Preferences card (line 63-65) with a link to `/brands`:
 
-## Changes
+- Import `Link` from `@tanstack/react-router`
+- Replace the empty-state paragraph with a small styled block containing:
+  - Link text: **"Manage brand canons →"**
+  - Description: "Edit character canons, brand voice, and campaign frameworks for each brand."
+  - Styled as a subtle text link with muted description, consistent with the integration items above
 
-### 1. `src/context/BrandContext.tsx`
+## 2. Update copyright year
 
-- Add state: `canonOverrides: Record<string, string>` initialized from localStorage keys `respin_canon_[brandId]`
-- Add function: `updateCanon(brandId: string, canon: string)` — saves to localStorage and updates state
-- Expose a `getBrand(id: string)` helper that returns the brand with canon override applied
-- Change `brand` derivation to merge the override: `{ ...BRANDS[activeBrandId], canon: canonOverrides[activeBrandId] ?? BRANDS[activeBrandId].canon }`
-- Export `canonOverrides` and `updateCanon` in context type
+Three changes from 2025 → 2026:
 
-### 2. `src/routes/_app.brands.tsx`
+| File | Line | Change |
+|------|------|--------|
+| `src/components/AppSidebar.tsx` | 96 | `Respin © 2025` → `Respin © 2026` |
+| `src/data/tools.ts` | 105 | Placeholder text `"…winning in 2025…"` → `"…winning in 2026…"` |
 
-- Import `useBrand` context and `Textarea` component, `Button`, and `toast` from sonner
-- Add local state per card: `editingId: string | null` and `draftCanon: string`
-- Replace the `<details>` block with:
-  - When not editing: "Edit canon" button
-  - When editing: Textarea (min-h-[200px], pre-filled with current canon), Save and Cancel buttons
-- Save calls `updateCanon(brand.id, draftCanon)`, shows `toast("Canon saved")`, collapses editor
-- Cancel resets draft and collapses
-- Display canon text comes from context (with override applied), not raw `BRANDS`
-
-### 3. Prompt propagation
-
-Already works — `useBrand().brand` is used in Content, CRM, and SEO pages to build prompts. Since we're updating the canon in the context's brand object, all prompts automatically get the updated canon. The brands page will also need to read brands through context to show overridden canons.
-
-## Technical Notes
-
-- localStorage keys: `respin_canon_kikis`, `respin_canon_throne`, `respin_canon_orions`, `respin_canon_chur`
-- SSR-safe: localStorage reads wrapped in `typeof window !== 'undefined'`
-- The Brands page iterates `Object.values(BRANDS)` but applies canon overrides from context for display
+No other instances found.
 
