@@ -577,8 +577,10 @@ export type Database = {
           brand_id: string
           campaign_id: string | null
           created_at: string
+          depends_on_task_id: string | null
           description: string | null
           due_date: string | null
+          handoff_status: Database["public"]["Enums"]["handoff_status"]
           id: string
           priority: Database["public"]["Enums"]["task_priority"]
           status: Database["public"]["Enums"]["task_status"]
@@ -592,8 +594,10 @@ export type Database = {
           brand_id: string
           campaign_id?: string | null
           created_at?: string
+          depends_on_task_id?: string | null
           description?: string | null
           due_date?: string | null
+          handoff_status?: Database["public"]["Enums"]["handoff_status"]
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
           status?: Database["public"]["Enums"]["task_status"]
@@ -607,8 +611,10 @@ export type Database = {
           brand_id?: string
           campaign_id?: string | null
           created_at?: string
+          depends_on_task_id?: string | null
           description?: string | null
           due_date?: string | null
+          handoff_status?: Database["public"]["Enums"]["handoff_status"]
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
           status?: Database["public"]["Enums"]["task_status"]
@@ -629,6 +635,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_depends_on_task_id_fkey"
+            columns: ["depends_on_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -726,6 +739,11 @@ export type Database = {
         | "sending"
         | "sent"
         | "measured"
+      handoff_status:
+        | "not_started"
+        | "ready_for_handoff"
+        | "handed_off"
+        | "accepted"
       seo_brief_status:
         | "research"
         | "briefed"
@@ -902,6 +920,12 @@ export const Constants = {
         "sending",
         "sent",
         "measured",
+      ],
+      handoff_status: [
+        "not_started",
+        "ready_for_handoff",
+        "handed_off",
+        "accepted",
       ],
       seo_brief_status: [
         "research",
