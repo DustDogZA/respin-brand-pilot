@@ -30,6 +30,12 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "respin.hub — Marketing OS" },
       { name: "description", content: "AI-enhanced marketing operating system for iGaming brands" },
+      { property: "og:title", content: "respin.hub — Marketing OS" },
+      { name: "twitter:title", content: "respin.hub — Marketing OS" },
+      { property: "og:description", content: "AI-enhanced marketing operating system for iGaming brands" },
+      { name: "twitter:description", content: "AI-enhanced marketing operating system for iGaming brands" },
+      { name: "twitter:card", content: "summary" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
