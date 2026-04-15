@@ -102,7 +102,7 @@ export const COMMUNITY_TOOLS: Tool[] = [
     icon: '📰',
     desc: 'Community-voice editorial. Player-authentic. Can surface owned brands organically.',
     fields: [
-      { id: 'topic', label: 'Topic', type: 'text', placeholder: 'e.g. Why crypto casinos are winning in 2025…' },
+      { id: 'topic', label: 'Topic', type: 'text', placeholder: 'e.g. Why crypto casinos are winning in 2026…' },
       { id: 'angle', label: 'Angle / position', type: 'text', placeholder: 'e.g. Contrarian take, enthusiastic recommendation…' },
       { id: 'brands', label: 'Brands to mention', type: 'text', placeholder: "e.g. Kiki's Casino, Orion's Fortune (optional)" },
     ],

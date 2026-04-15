@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -59,9 +59,19 @@ function SettingsPage() {
             Preferences
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground/60 text-center py-8">
-            User preferences and authentication will be configured in the next phase.
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <Link to="/brands" className="text-sm font-medium text-primary hover:underline">
+                Manage brand canons →
+              </Link>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Edit character canons, brand voice, and campaign frameworks for each brand.
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground/50 text-center py-4 border-t border-border/30">
+            More preferences coming soon.
           </p>
         </CardContent>
       </Card>
