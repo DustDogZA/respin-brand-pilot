@@ -21,7 +21,7 @@ function TodayPage() {
 }
 
 
-function TodayPage() {
+function SingleBrandToday() {
   const { brand } = useBrand();
   const { entries } = useActivityLog();
   const today = new Date().toLocaleDateString('en-US', {
