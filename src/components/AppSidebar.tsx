@@ -93,7 +93,7 @@ export function AppSidebar() {
       <SidebarFooter className="p-3">
         {!collapsed && (
           <p className="text-[10px] text-muted-foreground/60 text-center">
-            Respin © 2025
+            Respin © 2026
           </p>
         )}
       </SidebarFooter>
