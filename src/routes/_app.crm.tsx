@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Copy, Sparkles, Loader2 } from 'lucide-react';
+import { PageHero } from '@/components/PageHero';
 import { generateContent } from '@/utils/ai.functions';
 import { buildCrmPrompt } from '@/utils/prompts';
 
@@ -124,13 +125,9 @@ function CrmPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">CRM & Retention</h1>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          {brand.mode === 'campaign' ? 'Player lifecycle, segmentation & retention' : 'Community engagement'} — {brand.name}
-        </p>
-      </div>
+    <div>
+      <PageHero page="crm" />
+      <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
 
       <Card>
         <CardHeader className="pb-3">
@@ -162,6 +159,7 @@ function CrmPage() {
             <ToolCard key={tool.id} tool={tool} onClick={() => { setSelectedTool(tool); setInputs({}); setOutput(''); }} />
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

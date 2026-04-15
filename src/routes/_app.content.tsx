@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Copy, Sparkles, Loader2 } from 'lucide-react';
+import { PageHero } from '@/components/PageHero';
 import { generateContent } from '@/utils/ai.functions';
 import { buildContentPrompt } from '@/utils/prompts';
 
@@ -157,15 +158,9 @@ function ContentPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.03em] text-foreground">
-          Content Studio
-        </h1>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          {brand.mode === 'campaign' ? 'Campaign & character content tools' : 'Community content tools'} — {brand.name}
-        </p>
-      </div>
+    <div>
+      <PageHero page="content" />
+      <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
 
       {brand.mode === 'campaign' && (
         <>
@@ -201,6 +196,7 @@ function ContentPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
