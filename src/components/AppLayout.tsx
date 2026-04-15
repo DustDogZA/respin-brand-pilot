@@ -41,9 +41,5 @@ function AuthGate() {
 }
 
 export function AppLayout() {
-  return (
-    <AuthProvider>
-      <AuthGate />
-    </AuthProvider>
-  );
+  return <AuthGate />;
 }
