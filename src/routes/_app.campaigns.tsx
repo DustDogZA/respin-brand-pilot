@@ -21,26 +21,26 @@ function CampaignsPage() {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Campaigns</h1>
-        <p className="text-sm text-muted-foreground mt-1">Campaign calendar and active initiatives across brands</p>
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Campaigns</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Campaign calendar and active initiatives across brands</p>
       </div>
 
-      <Card className="border-border/50 bg-card/40">
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             Portfolio at a Glance
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-border/50">
-                  <th className="text-left py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Brand</th>
-                  <th className="text-left py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Activity</th>
-                  <th className="text-left py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Type</th>
-                  <th className="text-left py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Period</th>
-                  <th className="text-left py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Status</th>
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Brand</th>
+                  <th className="text-left py-3 px-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Activity</th>
+                  <th className="text-left py-3 px-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Type</th>
+                  <th className="text-left py-3 px-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Period</th>
+                  <th className="text-left py-3 px-2 text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -48,7 +48,7 @@ function CampaignsPage() {
                   CAMPAIGN_CALENDAR.map((campaign, i) => {
                     const brandData = Object.values(BRANDS).find((b) => b.short === campaign.brand);
                     return (
-                      <tr key={i} className="border-b border-border/20 hover:bg-accent/20 transition-colors">
+                      <tr key={i} className="border-b border-border hover:bg-accent/20 transition-colors">
                         <td className="py-3 px-2">
                           <div className="flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: brandData?.accent }} />
@@ -57,7 +57,7 @@ function CampaignsPage() {
                         </td>
                         <td className="py-3 px-2 text-foreground">{campaign.activity}</td>
                         <td className="py-3 px-2">
-                          <Badge variant="outline" className="text-[10px] border-border/50 text-muted-foreground">
+                          <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                             {TYPE_LABELS[campaign.type] || campaign.type}
                           </Badge>
                         </td>
@@ -81,7 +81,7 @@ function CampaignsPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                    <td colSpan={5} className="py-12 text-center text-[13px] text-muted-foreground">
                       No campaigns yet. Create your first campaign to get started.
                     </td>
                   </tr>

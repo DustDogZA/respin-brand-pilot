@@ -50,8 +50,8 @@ function ReportingPage() {
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Reporting</h1>
-        <p className="text-sm text-muted-foreground mt-1">Activity feed and cross-brand output log</p>
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Reporting</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Activity feed and cross-brand output log</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -59,7 +59,7 @@ function ReportingPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search activity…"
-          className="bg-background/50 max-w-xs"
+          className="bg-background/50 max-w-xs rounded-full"
         />
         <div className="flex gap-1.5">
           {FILTER_TABS.map((tab) => (
@@ -75,32 +75,32 @@ function ReportingPage() {
         </div>
       </div>
 
-      <Card className="border-border/50 bg-card/40">
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             Activity Feed ({filtered.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {filtered.length > 0 ? (
             filtered.map((entry) => (
-              <div key={entry.id} className="flex items-start gap-3 py-3 border-b border-border/30 last:border-0">
+              <div key={entry.id} className="flex items-start gap-3 py-3 border-b border-border last:border-0">
                 <span
                   className="mt-1.5 h-2 w-2 rounded-full shrink-0"
                   style={{ backgroundColor: getBrandAccent(entry.brand) }}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium" style={{ color: getBrandAccent(entry.brand) }}>
+                    <span className="text-[11px] font-medium" style={{ color: getBrandAccent(entry.brand) }}>
                       {entry.brand}
                     </span>
-                    <Badge variant="outline" className="text-[10px] border-border/50 text-muted-foreground">
+                    <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                       {TYPE_LABELS[entry.type] || entry.type}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{entry.toolName}</span>
+                    <span className="text-[11px] text-muted-foreground">{entry.toolName}</span>
                   </div>
-                  <p className="text-sm text-foreground/90 leading-relaxed">{entry.outputPreview}</p>
-                  <span className="text-xs text-muted-foreground mt-1 block">{relativeTime(entry.timestamp)}</span>
+                  <p className="text-[13px] text-foreground/90 leading-relaxed">{entry.outputPreview}</p>
+                  <span className="text-[11px] text-muted-foreground mt-1 block">{relativeTime(entry.timestamp)}</span>
                 </div>
                 <button
                   onClick={() => handleCopy(entry)}
@@ -114,7 +114,7 @@ function ReportingPage() {
           ) : (
             <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
               <Activity className="h-6 w-6 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
                 {entries.length === 0
                   ? 'No activity yet — generate your first piece of content.'
                   : 'No matching activity'}

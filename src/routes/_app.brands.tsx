@@ -37,8 +37,8 @@ function BrandsPage() {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Brands</h1>
-        <p className="text-sm text-muted-foreground mt-1">Respin portfolio — brand profiles, character canons, and channel configuration</p>
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Brands</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Respin portfolio — brand profiles, character canons, and channel configuration</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,41 +47,41 @@ function BrandsPage() {
           const isEditing = editingId === brand.id;
 
           return (
-            <Card key={brand.id} className="border-border/50 bg-card/40 hover:border-border/80 transition-colors">
+            <Card key={brand.id} className="hover:border-primary/20 transition-colors">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="h-3 w-3 rounded-full" style={{ backgroundColor: brand.accent }} />
-                    <CardTitle className="text-base font-semibold">{brand.name}</CardTitle>
+                    <CardTitle className="text-base font-bold tracking-[-0.01em]">{brand.name}</CardTitle>
                   </div>
                   <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">{brand.stage}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-foreground italic">"{brand.tagline}"</p>
+                <p className="text-[13px] text-foreground italic">"{brand.tagline}"</p>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Character</p>
-                    <p className="text-sm text-foreground">{brand.character}</p>
+                    <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mb-1">Character</p>
+                    <p className="text-[13px] text-foreground">{brand.character}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Mode</p>
-                    <p className="text-sm text-foreground capitalize">{brand.mode}</p>
+                    <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mb-1">Mode</p>
+                    <p className="text-[13px] text-foreground capitalize">{brand.mode}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Channels</p>
-                    <p className="text-sm text-foreground">{brand.channels.join(', ')}</p>
+                    <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mb-1">Channels</p>
+                    <p className="text-[13px] text-foreground">{brand.channels.join(', ')}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Payment</p>
-                    <p className="text-sm text-foreground">{brand.payment}</p>
+                    <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mb-1">Payment</p>
+                    <p className="text-[13px] text-foreground">{brand.payment}</p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Framework</p>
-                  <p className="text-sm text-foreground/80">{brand.framework}</p>
+                  <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground mb-1">Framework</p>
+                  <p className="text-[13px] text-foreground/80">{brand.framework}</p>
                 </div>
 
                 {isEditing ? (
@@ -89,7 +89,7 @@ function BrandsPage() {
                     <Textarea
                       value={draftCanon}
                       onChange={(e) => setDraftCanon(e.target.value)}
-                      className="min-h-[200px] bg-background/40 border-border/50 text-sm leading-relaxed"
+                      className="min-h-[200px] bg-background/40 border-border text-[13px] leading-relaxed"
                     />
                     <div className="flex gap-2">
                       <Button size="sm" onClick={() => saveCanon(brand.id)}>Save</Button>
@@ -101,7 +101,7 @@ function BrandsPage() {
                     <Button size="sm" variant="outline" onClick={() => startEdit(brand.id, brand.canon)}>
                       Edit canon
                     </Button>
-                    <pre className="p-3 rounded-lg bg-background/40 border border-border/30 text-xs text-foreground/80 whitespace-pre-wrap leading-relaxed max-h-60 overflow-auto">
+                    <pre className="p-3 rounded-[14px] bg-background border-[0.5px] border-border text-[11px] text-foreground/80 whitespace-pre-wrap leading-relaxed max-h-60 overflow-auto">
                       {brand.canon}
                     </pre>
                   </div>

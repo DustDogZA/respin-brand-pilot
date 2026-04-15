@@ -8,7 +8,7 @@ export function BrandSelector() {
 
   return (
     <Select value={activeBrandId} onValueChange={setActiveBrandId}>
-      <SelectTrigger className="w-full border-border/50 bg-sidebar-accent/50 text-sm">
+      <SelectTrigger className="w-full border-border bg-sidebar-accent/50 text-sm rounded-full">
         <div className="flex items-center gap-2">
           <span
             className="h-2.5 w-2.5 rounded-full shrink-0"

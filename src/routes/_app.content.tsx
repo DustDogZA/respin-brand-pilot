@@ -82,17 +82,17 @@ function ContentPage() {
         <div className="flex items-center gap-3">
           <span className="text-2xl">{selectedTool.icon}</span>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-xl font-extrabold tracking-[-0.03em] text-foreground">
               {selectedTool.name}
             </h1>
-            <p className="text-sm text-muted-foreground">{selectedTool.desc}</p>
+            <p className="text-[13px] text-muted-foreground">{selectedTool.desc}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-border/50 bg-card/40">
+          <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 Configure
               </CardTitle>
             </CardHeader>
@@ -119,10 +119,10 @@ function ContentPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 bg-card/40">
+          <Card>
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                   Output
                 </CardTitle>
                 {output && !loading && (
@@ -137,15 +137,15 @@ function ContentPage() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Working…
                 </div>
               ) : output ? (
-                <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap text-sm text-foreground/90 leading-relaxed">
+                <div className="prose prose-sm max-w-none whitespace-pre-wrap text-[13px] text-foreground/90 leading-relaxed">
                   {output}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">
                   Output will appear here
                 </div>
               )}
@@ -159,10 +159,10 @@ function ContentPage() {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em] text-foreground">
           Content Studio
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-[13px] text-muted-foreground mt-1">
           {brand.mode === 'campaign' ? 'Campaign & character content tools' : 'Community content tools'} — {brand.name}
         </p>
       </div>
@@ -170,7 +170,7 @@ function ContentPage() {
       {brand.mode === 'campaign' && (
         <>
           <div>
-            <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3 flex items-center gap-2">
               Campaign Tools
               <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">{brand.short}</Badge>
             </h2>
@@ -182,7 +182,7 @@ function ContentPage() {
           </div>
 
           <div>
-            <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">
               Community Tools (CHUR.BET)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -216,10 +216,10 @@ function FieldInput({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-medium text-muted-foreground">{field.label}</label>
+      <label className="text-[11px] font-medium text-muted-foreground">{field.label}</label>
       {field.type === 'select' ? (
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className="bg-background/50">
+          <SelectTrigger className="bg-background/50 rounded-full">
             <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
           </SelectTrigger>
           <SelectContent>
@@ -242,7 +242,7 @@ function FieldInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.placeholder}
-          className="bg-background/50"
+          className="bg-background/50 rounded-full"
         />
       )}
     </div>

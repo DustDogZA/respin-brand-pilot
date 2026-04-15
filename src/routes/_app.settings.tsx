@@ -18,24 +18,24 @@ function SettingsPage() {
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Integrations, preferences, and configuration</p>
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Settings</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Integrations, preferences, and configuration</p>
       </div>
 
-      <Card className="border-border/50 bg-card/40">
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             Integrations
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {integrations.map((int) => (
-            <div key={int.name} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0">
+            <div key={int.name} className="flex items-center justify-between py-3 border-b border-border last:border-0">
               <div className="flex items-center gap-3">
                 <span className="text-xl">{int.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{int.name}</p>
-                  <p className="text-xs text-muted-foreground">{int.desc}</p>
+                  <p className="text-[13px] font-medium text-foreground">{int.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{int.desc}</p>
                 </div>
               </div>
               <Badge
@@ -53,24 +53,24 @@ function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-border/50 bg-card/40">
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             Preferences
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between py-3">
             <div>
-              <Link to="/brands" className="text-sm font-medium text-primary hover:underline">
+              <Link to="/brands" className="text-[13px] font-medium text-primary hover:underline">
                 Manage brand canons →
               </Link>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Edit character canons, brand voice, and campaign frameworks for each brand.
               </p>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground/50 text-center py-4 border-t border-border/30">
+          <p className="text-[11px] text-muted-foreground/50 text-center py-4 border-t border-border">
             More preferences coming soon.
           </p>
         </CardContent>

@@ -63,28 +63,28 @@ function CrmPage() {
         <div className="flex items-center gap-3">
           <span className="text-2xl">{selectedTool.icon}</span>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">{selectedTool.name}</h1>
-            <p className="text-sm text-muted-foreground">{selectedTool.desc}</p>
+            <h1 className="text-xl font-extrabold tracking-[-0.03em]">{selectedTool.name}</h1>
+            <p className="text-[13px] text-muted-foreground">{selectedTool.desc}</p>
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-border/50 bg-card/40">
+          <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Configure</CardTitle>
+              <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Configure</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {selectedTool.fields.map((field) => (
                 <div key={field.id} className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">{field.label}</label>
+                  <label className="text-[11px] font-medium text-muted-foreground">{field.label}</label>
                   {field.type === 'select' ? (
                     <Select value={inputs[field.id] || ''} onValueChange={(v) => setInputs((p) => ({ ...p, [field.id]: v }))}>
-                      <SelectTrigger className="bg-background/50"><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectTrigger className="bg-background/50 rounded-full"><SelectValue placeholder="Select…" /></SelectTrigger>
                       <SelectContent>
                         {field.options?.map((opt) => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   ) : (
-                    <Input value={inputs[field.id] || ''} onChange={(e) => setInputs((p) => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder} className="bg-background/50" />
+                    <Input value={inputs[field.id] || ''} onChange={(e) => setInputs((p) => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder} className="bg-background/50 rounded-full" />
                   )}
                 </div>
               ))}
@@ -97,24 +97,24 @@ function CrmPage() {
               </Button>
             </CardContent>
           </Card>
-          <Card className="border-border/50 bg-card/40">
+          <Card>
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Output</CardTitle>
+                <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Output</CardTitle>
                 {output && !loading && <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-foreground"><Copy className="h-4 w-4" /></button>}
               </div>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Working…
                 </div>
               ) : output ? (
-                <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap text-sm text-foreground/90 leading-relaxed">
+                <div className="prose prose-sm max-w-none whitespace-pre-wrap text-[13px] text-foreground/90 leading-relaxed">
                   {output}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">Output will appear here</div>
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">Output will appear here</div>
               )}
             </CardContent>
           </Card>
@@ -126,15 +126,15 @@ function CrmPage() {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">CRM & Retention</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">CRM & Retention</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">
           {brand.mode === 'campaign' ? 'Player lifecycle, segmentation & retention' : 'Community engagement'} — {brand.name}
         </p>
       </div>
 
-      <Card className="border-border/50 bg-card/30">
+      <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">iGaming CRM Intelligence</CardTitle>
+          <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">iGaming CRM Intelligence</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -146,9 +146,9 @@ function CrmPage() {
               { label: 'Character Comms', value: '+25–40% open rate' },
               { label: 'Retention ROI', value: '5–7x vs acquisition' },
             ].map((metric) => (
-              <div key={metric.label} className="p-3 rounded-lg bg-background/30 border border-border/30">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{metric.label}</p>
-                <p className="text-sm font-medium text-foreground mt-1">{metric.value}</p>
+              <div key={metric.label} className="p-3 rounded-[14px] bg-background border-[0.5px] border-border">
+                <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">{metric.label}</p>
+                <p className="text-[13px] font-medium text-foreground mt-1">{metric.value}</p>
               </div>
             ))}
           </div>
@@ -156,7 +156,7 @@ function CrmPage() {
       </Card>
 
       <div>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">CRM Tools</h2>
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">CRM Tools</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {CRM_TOOLS.map((tool) => (
             <ToolCard key={tool.id} tool={tool} onClick={() => { setSelectedTool(tool); setInputs({}); setOutput(''); }} />
