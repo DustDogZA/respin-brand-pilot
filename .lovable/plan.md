@@ -1,50 +1,54 @@
 
 
-# Branded Hero Sections for Content, CRM, SEO Pages
+# Single-Brand Today View — Two-Column Layout with AI Assistant
 
 ## Summary
 
-Create a shared `PageHero` component and add it to the top of the Content, CRM, and SEO tool-list views (not the tool-detail views). Each hero adapts its heading and accent color based on the active brand.
+Replace the current `SingleBrandToday` component with a hero section + two-column layout featuring metric cards with sparklines, per-brand action items, and a functional AI chat panel.
 
-## New File
+## Changes
 
-### `src/components/PageHero.tsx`
+### 1. `src/routes/_app.index.tsx` — Full rewrite of `SingleBrandToday`
 
-Reusable component accepting `page` prop (`'content' | 'crm' | 'seo'`).
+Replace the existing component (lines 24–188) with:
 
-Reads `brand` from `useBrand()` context. Renders:
+**Hero section** (dark band, same pattern as other pages):
+- Two decorative accent circles using brand color at 18% and 9% opacity
+- Eyebrow: `"{brand.name} — {brand.stage}"`
+- Heading: `"Good morning."` (44px, 900 weight)
+- 3 glassmorphic stat chips: content count, campaigns (hardcoded 0), stage badge pill
 
-- Dark band (`#0d1b2a`, padding `24px 24px 28px`, relative, overflow hidden)
-- Decorative accent circle (absolute, right -40px, top -40px, 200x200, brand-colored at 15% opacity)
-- Eyebrow: `"Content Studio — Kiki's Casino"` etc.
-- Heading logic:
-  - Content + campaign mode: `"Write as {character}."`
-  - Content + community mode: `"Build community content."`
-  - CRM + campaign: `"Design the retention machine."`
-  - CRM + community: `"Design the community machine."`
-  - SEO: `"Research the landscape."`
+**Two-column grid** below hero: `grid-template-columns: 1fr 300px`
 
-Brand accent map: `{ kikis: 'rgba(201,168,76,0.15)', throne: 'rgba(160,25,47,0.15)', orions: 'rgba(61,139,205,0.15)', chur: 'rgba(107,143,113,0.15)' }`
+**Left column** contains:
+- 4 metric cards in a `repeat(4, 1fr)` grid with inline SVG sparklines
+  - Content (activity count, green sparkline)
+  - Campaigns (0, amber sparkline)
+  - SEO signals (intel count, green sparkline)
+  - Stage (PRE/EXP text + 4-segment progress bar instead of sparkline)
+- "Next actions" section with 2 per-brand action cards (hardcoded content per brand ID)
 
-Page name map: `{ content: 'Content Studio', crm: 'CRM & Retention', seo: 'SEO Intelligence' }`
+**Right column** — AI Assistant panel:
+- Header with brand dot + "AI Assistant" label
+- Chat area with 3 pre-populated static messages (AI/User/AI) using brand-specific content
+- Input bar with pill container and send button
+- On send: calls `generateContent` server function with brand canon as system prompt, renders response as new AI message
+- Maintains local `useState` message array for the conversation
 
-## Modified Files
+### 2. Per-brand static data
 
-### `src/routes/_app.content.tsx`
+All action items and initial chat messages are defined as lookup objects keyed by brand ID within the component file. The initial AI message references the active brand name dynamically.
 
-In the tool-list return (line 159-168), replace the heading `<div>` with `<PageHero page="content" />`. Remove the old `<h1>` and `<p>` block.
+### 3. AI chat functionality
 
-### `src/routes/_app.crm.tsx`
+- `useState` for messages array, initialized with 3 decorative messages
+- On submit: push user message, call `generateContent` with brand canon as system prompt and full conversation as context, push AI response
+- Loading state: show a typing indicator bubble while awaiting response
+- Uses existing `generateContent` from `src/utils/ai.functions.ts`
 
-In the tool-list return (line 126-133), replace the heading `<div>` with `<PageHero page="crm" />`. Remove the old `<h1>` and `<p>`.
+## Files touched
 
-### `src/routes/_app.seo.tsx`
+Only `src/routes/_app.index.tsx` — the `SingleBrandToday` function is replaced. `TodayPage` routing logic and `AllBrandsOverview` import unchanged.
 
-In the tool-list return (line 144-149), replace the heading `<div>` with `<PageHero page="seo" />`. Remove the old `<h1>` and `<p>`.
-
-For all three pages, the hero sits outside the padded content container — the outer wrapper changes from `<div className="p-6 lg:p-8 ...">` to a wrapper with no top padding, where the hero is first, followed by the existing content in a padded div.
-
-## No other changes
-
-All content below the hero on each page remains untouched. Tool-detail views (when `selectedTool` is set) are not affected.
+No new files or dependencies needed.
 
