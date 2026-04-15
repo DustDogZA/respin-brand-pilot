@@ -19,6 +19,7 @@ import { Route as AppCrmRouteImport } from './routes/_app.crm'
 import { Route as AppContentRouteImport } from './routes/_app.content'
 import { Route as AppCampaignsRouteImport } from './routes/_app.campaigns'
 import { Route as AppBrandsRouteImport } from './routes/_app.brands'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -69,6 +70,12 @@ const AppBrandsRoute = AppBrandsRouteImport.update({
   path: '/brands',
   getParentRoute: () => AppRoute,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/reporting': typeof AppReportingRoute
   '/seo': typeof AppSeoRoute
   '/settings': typeof AppSettingsRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/seo': typeof AppSeoRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/_app/seo': typeof AppSeoRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/reporting'
     | '/seo'
     | '/settings'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/seo'
     | '/settings'
     | '/'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/_app'
@@ -140,11 +152,13 @@ export interface FileRouteTypes {
     | '/_app/seo'
     | '/_app/settings'
     | '/_app/'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -219,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrandsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -249,6 +270,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
