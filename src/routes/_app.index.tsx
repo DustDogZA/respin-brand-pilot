@@ -8,12 +8,20 @@ import { CalendarDays, Activity, FileText, Target, Globe, Layers } from 'lucide-
 import { CAMPAIGN_CALENDAR } from '@/data/activity';
 import { BRANDS } from '@/data/brands';
 import { Badge } from '@/components/ui/badge';
+import { AllBrandsOverview } from '@/components/AllBrandsOverview';
 
 export const Route = createFileRoute('/_app/')({
   component: TodayPage,
 });
 
 function TodayPage() {
+  const { activeBrandId } = useBrand();
+  if (activeBrandId === 'all') return <AllBrandsOverview />;
+  return <SingleBrandToday />;
+}
+
+
+function SingleBrandToday() {
   const { brand } = useBrand();
   const { entries } = useActivityLog();
   const today = new Date().toLocaleDateString('en-US', {
