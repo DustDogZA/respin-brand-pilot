@@ -6,6 +6,8 @@ type CampaignStatus = Database['public']['Enums']['campaign_status'];
 type TaskStatus = Database['public']['Enums']['task_status'];
 type TaskPriority = Database['public']['Enums']['task_priority'];
 type WorkflowType = Database['public']['Enums']['workflow_type'];
+type ApprovalStatus = Database['public']['Enums']['approval_status'];
+type ApprovableType = Database['public']['Enums']['approvable_type'];
 
 // =============================================
 // BRANDS
@@ -34,7 +36,7 @@ export const listCampaigns = createServerFn({ method: 'POST' })
       .from('campaigns')
       .select('*')
       .order('updated_at', { ascending: false });
-    if (data.brandId) query = query.eq('brand_id', data.brandId);
+    if (data.brandId && data.brandId !== 'all') query = query.eq('brand_id', data.brandId);
     if (data.status) query = query.eq('status', data.status);
     const { data: campaigns, error } = await query;
     if (error) throw new Error(error.message);
@@ -52,21 +54,39 @@ export const getCampaign = createServerFn({ method: 'POST' })
       .single();
     if (error) throw new Error(error.message);
 
-    const [tasksRes, briefsRes, journeysRes, seoRes, approvalsRes] = await Promise.all([
+    const [tasksRes, briefsRes, journeysRes, seoRes, approvalsRes, ownerRes] = await Promise.all([
       context.supabase.from('tasks').select('*').eq('campaign_id', data.id).order('priority'),
       context.supabase.from('content_briefs').select('*').eq('campaign_id', data.id),
       context.supabase.from('crm_journeys').select('*').eq('campaign_id', data.id),
       context.supabase.from('seo_briefs').select('*').eq('campaign_id', data.id),
       context.supabase.from('approvals').select('*').eq('approvable_id', data.id),
+      campaign.owner_id
+        ? context.supabase.from('profiles').select('*').eq('id', campaign.owner_id).single()
+        : Promise.resolve({ data: null, error: null }),
     ]);
+
+    // Also fetch approvals for linked briefs/journeys
+    const briefIds = (briefsRes.data || []).map((b) => b.id);
+    const journeyIds = (journeysRes.data || []).map((j) => j.id);
+    const linkedIds = [...briefIds, ...journeyIds];
+
+    let linkedApprovals: any[] = [];
+    if (linkedIds.length > 0) {
+      const { data: la } = await context.supabase
+        .from('approvals')
+        .select('*')
+        .in('approvable_id', linkedIds);
+      linkedApprovals = la || [];
+    }
 
     return {
       campaign,
+      owner: ownerRes.data,
       tasks: tasksRes.data || [],
       contentBriefs: briefsRes.data || [],
       crmJourneys: journeysRes.data || [],
       seoBriefs: seoRes.data || [],
-      approvals: approvalsRes.data || [],
+      approvals: [...(approvalsRes.data || []), ...linkedApprovals],
     };
   });
 
@@ -86,6 +106,25 @@ export const createCampaign = createServerFn({ method: 'POST' })
       .single();
     if (error) throw new Error(error.message);
     return { campaign };
+  });
+
+export const updateCampaign = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    id: string;
+    name?: string; objective?: string; audience?: string; offer_angle?: string;
+    channels?: string[]; content_pillars?: string[]; crm_segments?: string[];
+    seo_targets?: string[]; status?: CampaignStatus;
+    start_date?: string; end_date?: string;
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { id, ...updates } = data;
+    const { error } = await context.supabase
+      .from('campaigns')
+      .update(updates)
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+    return { success: true };
   });
 
 export const updateCampaignStatus = createServerFn({ method: 'POST' })
@@ -123,6 +162,7 @@ export const createTask = createServerFn({ method: 'POST' })
   .inputValidator((input: {
     brand_id: string; title: string; campaign_id?: string; description?: string;
     priority?: TaskPriority; workflow_type?: WorkflowType; due_date?: string;
+    depends_on_task_id?: string;
   }) => input)
   .handler(async ({ data, context }) => {
     const insertData = { ...data, assignee_id: context.userId };
@@ -133,6 +173,26 @@ export const createTask = createServerFn({ method: 'POST' })
       .single();
     if (error) throw new Error(error.message);
     return { task };
+  });
+
+export const updateTask = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    id: string;
+    title?: string; description?: string; priority?: TaskPriority;
+    status?: TaskStatus; due_date?: string; blocker_note?: string;
+    handoff_status?: 'not_started' | 'ready_for_handoff' | 'handed_off' | 'accepted';
+    depends_on_task_id?: string | null;
+    workflow_type?: WorkflowType;
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { id, ...updates } = data;
+    const { error } = await context.supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+    return { success: true };
   });
 
 export const updateTaskStatus = createServerFn({ method: 'POST' })
@@ -250,6 +310,49 @@ export const listPendingApprovals = createServerFn({ method: 'GET' })
     return { approvals: data || [] };
   });
 
+export const createApproval = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    approvable_id: string;
+    approvable_type: ApprovableType;
+    comment?: string;
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { data: approval, error } = await context.supabase
+      .from('approvals')
+      .insert({
+        approvable_id: data.approvable_id,
+        approvable_type: data.approvable_type,
+        reviewer_id: context.userId,
+        comment: data.comment || null,
+        status: 'pending' as ApprovalStatus,
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return { approval };
+  });
+
+export const updateApproval = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    id: string;
+    status: ApprovalStatus;
+    comment?: string;
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from('approvals')
+      .update({
+        status: data.status,
+        comment: data.comment || null,
+        reviewer_id: context.userId,
+      })
+      .eq('id', data.id);
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
+
 // =============================================
 // TEAM
 // =============================================
@@ -310,4 +413,29 @@ export const getPortfolioStats = createServerFn({ method: 'POST' })
       crmJourneys: journeysRes.data || [],
       seoBriefs: seoRes.data || [],
     };
+  });
+
+// =============================================
+// CAMPAIGN TASK COUNTS (for list view)
+// =============================================
+
+export const getCampaignTaskCounts = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { campaignIds: string[] }) => input)
+  .handler(async ({ data, context }) => {
+    if (data.campaignIds.length === 0) return { counts: {} };
+    const { data: tasks, error } = await context.supabase
+      .from('tasks')
+      .select('id, campaign_id, status')
+      .in('campaign_id', data.campaignIds);
+    if (error) throw new Error(error.message);
+
+    const counts: Record<string, { total: number; done: number }> = {};
+    for (const t of tasks || []) {
+      if (!t.campaign_id) continue;
+      if (!counts[t.campaign_id]) counts[t.campaign_id] = { total: 0, done: 0 };
+      counts[t.campaign_id].total++;
+      if (t.status === 'done') counts[t.campaign_id].done++;
+    }
+    return { counts };
   });

@@ -19,6 +19,7 @@ import { Route as AppCrmRouteImport } from './routes/_app.crm'
 import { Route as AppContentRouteImport } from './routes/_app.content'
 import { Route as AppCampaignsRouteImport } from './routes/_app.campaigns'
 import { Route as AppBrandsRouteImport } from './routes/_app.brands'
+import { Route as AppCampaignsCampaignIdRouteImport } from './routes/_app.campaigns.$campaignId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const LoginRoute = LoginRouteImport.update({
@@ -70,6 +71,11 @@ const AppBrandsRoute = AppBrandsRouteImport.update({
   path: '/brands',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCampaignsCampaignIdRoute = AppCampaignsCampaignIdRouteImport.update({
+  id: '/$campaignId',
+  path: '/$campaignId',
+  getParentRoute: () => AppCampaignsRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -81,24 +87,26 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/brands': typeof AppBrandsRoute
-  '/campaigns': typeof AppCampaignsRoute
+  '/campaigns': typeof AppCampaignsRouteWithChildren
   '/content': typeof AppContentRoute
   '/crm': typeof AppCrmRoute
   '/reporting': typeof AppReportingRoute
   '/seo': typeof AppSeoRoute
   '/settings': typeof AppSettingsRoute
+  '/campaigns/$campaignId': typeof AppCampaignsCampaignIdRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/brands': typeof AppBrandsRoute
-  '/campaigns': typeof AppCampaignsRoute
+  '/campaigns': typeof AppCampaignsRouteWithChildren
   '/content': typeof AppContentRoute
   '/crm': typeof AppCrmRoute
   '/reporting': typeof AppReportingRoute
   '/seo': typeof AppSeoRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/campaigns/$campaignId': typeof AppCampaignsCampaignIdRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -106,13 +114,14 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/brands': typeof AppBrandsRoute
-  '/_app/campaigns': typeof AppCampaignsRoute
+  '/_app/campaigns': typeof AppCampaignsRouteWithChildren
   '/_app/content': typeof AppContentRoute
   '/_app/crm': typeof AppCrmRoute
   '/_app/reporting': typeof AppReportingRoute
   '/_app/seo': typeof AppSeoRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/campaigns/$campaignId': typeof AppCampaignsCampaignIdRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/reporting'
     | '/seo'
     | '/settings'
+    | '/campaigns/$campaignId'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/seo'
     | '/settings'
     | '/'
+    | '/campaigns/$campaignId'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_app/seo'
     | '/_app/settings'
     | '/_app/'
+    | '/_app/campaigns/$campaignId'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -233,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrandsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/campaigns/$campaignId': {
+      id: '/_app/campaigns/$campaignId'
+      path: '/$campaignId'
+      fullPath: '/campaigns/$campaignId'
+      preLoaderRoute: typeof AppCampaignsCampaignIdRouteImport
+      parentRoute: typeof AppCampaignsRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -243,9 +262,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppCampaignsRouteChildren {
+  AppCampaignsCampaignIdRoute: typeof AppCampaignsCampaignIdRoute
+}
+
+const AppCampaignsRouteChildren: AppCampaignsRouteChildren = {
+  AppCampaignsCampaignIdRoute: AppCampaignsCampaignIdRoute,
+}
+
+const AppCampaignsRouteWithChildren = AppCampaignsRoute._addFileChildren(
+  AppCampaignsRouteChildren,
+)
+
 interface AppRouteChildren {
   AppBrandsRoute: typeof AppBrandsRoute
-  AppCampaignsRoute: typeof AppCampaignsRoute
+  AppCampaignsRoute: typeof AppCampaignsRouteWithChildren
   AppContentRoute: typeof AppContentRoute
   AppCrmRoute: typeof AppCrmRoute
   AppReportingRoute: typeof AppReportingRoute
@@ -256,7 +287,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppBrandsRoute: AppBrandsRoute,
-  AppCampaignsRoute: AppCampaignsRoute,
+  AppCampaignsRoute: AppCampaignsRouteWithChildren,
   AppContentRoute: AppContentRoute,
   AppCrmRoute: AppCrmRoute,
   AppReportingRoute: AppReportingRoute,
