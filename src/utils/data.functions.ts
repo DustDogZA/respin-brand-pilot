@@ -181,7 +181,8 @@ export const updateTask = createServerFn({ method: 'POST' })
     id: string;
     title?: string; description?: string; priority?: TaskPriority;
     status?: TaskStatus; due_date?: string; blocker_note?: string;
-    handoff_status?: string; depends_on_task_id?: string | null;
+    handoff_status?: 'not_started' | 'ready_for_handoff' | 'handed_off' | 'accepted';
+    depends_on_task_id?: string | null;
     workflow_type?: WorkflowType;
   }) => input)
   .handler(async ({ data, context }) => {
