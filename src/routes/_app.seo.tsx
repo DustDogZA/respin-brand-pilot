@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { useBrand } from '@/context/BrandContext';
+import { useActivityLog } from '@/context/ActivityLogContext';
 import { ToolCard } from '@/components/ToolCard';
 import { INTEL_TOOLS, type Tool } from '@/data/tools';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_app/seo')({
 
 function SeoPage() {
   const { brand } = useBrand();
+  const { addEntry } = useActivityLog();
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const [output, setOutput] = useState('');
@@ -42,6 +44,14 @@ function SeoPage() {
         data: { systemPrompt: system, userPrompt: user, maxTokens: 1800 },
       });
       setOutput(result.text);
+      if (result.text && !result.text.startsWith('Something went wrong')) {
+        addEntry({
+          brand: brand.short,
+          toolName: selectedTool.name,
+          type: 'intel',
+          fullOutput: result.text,
+        });
+      }
     } catch (e) {
       setOutput(`Something went wrong: ${e instanceof Error ? e.message : 'Unknown error'}`);
     } finally {

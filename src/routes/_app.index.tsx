@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useBrand } from '@/context/BrandContext';
-import { ActivityItem } from '@/components/ActivityItem';
-import { SEED_ACTIVITY, CAMPAIGN_CALENDAR } from '@/data/activity';
-import { BRANDS } from '@/data/brands';
+import { useActivityLog, relativeTime } from '@/context/ActivityLogContext';
+import { getBrandAccent } from '@/data/brands';
+import { MetricCard } from '@/components/MetricCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CalendarDays, Activity, FileText, Target, Globe, Layers } from 'lucide-react';
+import { CAMPAIGN_CALENDAR } from '@/data/activity';
+import { BRANDS } from '@/data/brands';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, CalendarDays, Activity, LayoutGrid } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/')({
   component: TodayPage,
@@ -13,15 +15,21 @@ export const Route = createFileRoute('/_app/')({
 
 function TodayPage() {
   const { brand } = useBrand();
+  const { entries } = useActivityLog();
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
   });
 
+  const contentVelocity = entries.length;
+  const activeCampaigns = entries.filter((e) => e.type === 'acq' || e.type === 'ret').length;
+  const seoKeywords = entries.filter((e) => e.type === 'intel').length;
+  const recentTwo = entries.slice(0, 2);
+  const recentSix = entries.slice(0, 6);
+
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Welcome to respin.hub
@@ -29,32 +37,54 @@ function TodayPage() {
         <p className="text-sm text-muted-foreground mt-1">{today} — {brand.name}</p>
       </div>
 
-      {/* Metrics — empty state */}
-      <Card className="border-border/50 bg-card/40">
-        <CardContent className="py-10 flex flex-col items-center justify-center text-center gap-3">
-          <LayoutGrid className="h-8 w-8 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">
-            Live metrics will appear here once integrations are connected.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <MetricCard label="Content Velocity" value={String(contentVelocity)} icon={<FileText className="h-4 w-4" />} />
+        <MetricCard label="Active Campaigns" value={String(activeCampaigns)} icon={<Target className="h-4 w-4" />} />
+        <MetricCard label="Brands Active" value="4" icon={<Layers className="h-4 w-4" />} />
+        <MetricCard label="SEO Keywords" value={String(seoKeywords)} icon={<Globe className="h-4 w-4" />} />
+      </div>
 
-      {/* Priority Actions — empty state */}
+      {/* Recommended Next Actions */}
       <div>
         <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-4">
           Recommended next actions
         </h2>
-        <Card className="border-border/50 bg-card/40">
-          <CardContent className="py-10 flex flex-col items-center justify-center text-center gap-3">
-            <Sparkles className="h-8 w-8 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">
-              Your recommended actions will appear here as you use the platform.
-            </p>
-            <Link to="/content" className="text-xs text-primary hover:underline mt-1">
-              Start by creating content →
-            </Link>
-          </CardContent>
-        </Card>
+        {recentTwo.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {recentTwo.map((entry) => (
+              <Card key={entry.id} className="border-border/50 bg-card/40">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="mt-1.5 h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: getBrandAccent(entry.brand) }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-muted-foreground">{entry.brand} · {entry.toolName}</p>
+                      <p className="text-sm text-foreground mt-1 line-clamp-2">{entry.outputPreview}</p>
+                      <Link to="/reporting" className="text-xs text-primary hover:underline mt-2 inline-block">
+                        View in Reporting →
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="border-border/50 bg-card/40">
+            <CardContent className="py-10 flex flex-col items-center justify-center text-center gap-3">
+              <Activity className="h-8 w-8 text-muted-foreground/40" />
+              <p className="text-sm text-muted-foreground">
+                Your recommended actions will appear here as you use the platform.
+              </p>
+              <Link to="/content" className="text-xs text-primary hover:underline mt-1">
+                Start by creating content →
+              </Link>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -66,9 +96,24 @@ function TodayPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            {SEED_ACTIVITY.length > 0 ? (
-              SEED_ACTIVITY.slice(0, 6).map((entry, i) => (
-                <ActivityItem key={i} entry={entry} />
+            {recentSix.length > 0 ? (
+              recentSix.map((entry) => (
+                <div key={entry.id} className="flex items-start gap-3 py-3 border-b border-border/30 last:border-0">
+                  <span
+                    className="mt-1.5 h-2 w-2 rounded-full shrink-0"
+                    style={{ backgroundColor: getBrandAccent(entry.brand) }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-foreground leading-relaxed line-clamp-1">{entry.outputPreview}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{entry.brand}</span>
+                      <span className="text-muted-foreground/30">·</span>
+                      <span className="text-xs text-muted-foreground">{entry.toolName}</span>
+                      <span className="text-muted-foreground/30">·</span>
+                      <span className="text-xs text-muted-foreground">{relativeTime(entry.timestamp)}</span>
+                    </div>
+                  </div>
+                </div>
               ))
             ) : (
               <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
