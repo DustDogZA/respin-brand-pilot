@@ -7,7 +7,7 @@ export function AppLayout() {
   return (
     <BrandProvider>
       <ActivityLogProvider>
-        <div className="min-h-screen flex flex-col w-full">
+        <div className="min-h-screen flex flex-col w-full pb-14 md:pb-0">
           <TopNav />
           <main className="flex-1 overflow-auto">
             <Outlet />

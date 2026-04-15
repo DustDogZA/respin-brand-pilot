@@ -9,14 +9,14 @@ interface MetricCardProps {
 
 export function MetricCard({ label, value, change, icon }: MetricCardProps) {
   return (
-    <Card className="rounded-[14px]">
+    <Card>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            <p className="text-metadata text-muted-foreground">
               {label}
             </p>
-            <p className="text-[32px] font-black tracking-[-0.04em] text-foreground leading-none">
+            <p className="text-kpi text-foreground">
               {value}
             </p>
             {change && (
@@ -24,7 +24,7 @@ export function MetricCard({ label, value, change, icon }: MetricCardProps) {
             )}
           </div>
           {icon && (
-            <div className="text-muted-foreground/60">
+            <div className="text-muted-foreground/40">
               {icon}
             </div>
           )}
