@@ -1,5 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import type { Database } from '@/integrations/supabase/types';
+
+type CampaignStatus = Database['public']['Enums']['campaign_status'];
+type TaskStatus = Database['public']['Enums']['task_status'];
+type TaskPriority = Database['public']['Enums']['task_priority'];
+type WorkflowType = Database['public']['Enums']['workflow_type'];
 
 // =============================================
 // BRANDS
@@ -22,7 +28,7 @@ export const listBrands = createServerFn({ method: 'GET' })
 
 export const listCampaigns = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { brandId?: string; status?: string }) => input)
+  .inputValidator((input: { brandId?: string; status?: CampaignStatus }) => input)
   .handler(async ({ data, context }) => {
     let query = context.supabase
       .from('campaigns')
@@ -68,13 +74,14 @@ export const createCampaign = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: {
     brand_id: string; name: string; objective?: string; audience?: string;
-    offer_angle?: string; channels?: string[]; status?: string;
+    offer_angle?: string; channels?: string[]; status?: CampaignStatus;
     start_date?: string; end_date?: string;
   }) => input)
   .handler(async ({ data, context }) => {
+    const insertData = { ...data, owner_id: context.userId };
     const { data: campaign, error } = await context.supabase
       .from('campaigns')
-      .insert({ ...data, owner_id: context.userId })
+      .insert([insertData] as any)
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -83,7 +90,7 @@ export const createCampaign = createServerFn({ method: 'POST' })
 
 export const updateCampaignStatus = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; status: string }) => input)
+  .inputValidator((input: { id: string; status: CampaignStatus }) => input)
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from('campaigns')
@@ -99,7 +106,7 @@ export const updateCampaignStatus = createServerFn({ method: 'POST' })
 
 export const listTasks = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { brandId?: string; campaignId?: string; status?: string; workflowType?: string }) => input)
+  .inputValidator((input: { brandId?: string; campaignId?: string; status?: TaskStatus; workflowType?: WorkflowType }) => input)
   .handler(async ({ data, context }) => {
     let query = context.supabase.from('tasks').select('*').order('priority').order('due_date', { ascending: true, nullsFirst: false });
     if (data.brandId) query = query.eq('brand_id', data.brandId);
@@ -115,12 +122,13 @@ export const createTask = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: {
     brand_id: string; title: string; campaign_id?: string; description?: string;
-    priority?: string; workflow_type?: string; due_date?: string;
+    priority?: TaskPriority; workflow_type?: WorkflowType; due_date?: string;
   }) => input)
   .handler(async ({ data, context }) => {
+    const insertData = { ...data, assignee_id: context.userId };
     const { data: task, error } = await context.supabase
       .from('tasks')
-      .insert({ ...data, assignee_id: context.userId })
+      .insert([insertData] as any)
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -129,7 +137,7 @@ export const createTask = createServerFn({ method: 'POST' })
 
 export const updateTaskStatus = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; status: string }) => input)
+  .inputValidator((input: { id: string; status: TaskStatus }) => input)
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from('tasks')
