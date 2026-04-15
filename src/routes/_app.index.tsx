@@ -1,24 +1,15 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useBrand } from '@/context/BrandContext';
-import { MetricCard } from '@/components/MetricCard';
-import { PriorityCard } from '@/components/PriorityCard';
 import { ActivityItem } from '@/components/ActivityItem';
 import { SEED_ACTIVITY, CAMPAIGN_CALENDAR } from '@/data/activity';
 import { BRANDS } from '@/data/brands';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Zap, Target, FileText } from 'lucide-react';
+import { Sparkles, CalendarDays, Activity, LayoutGrid } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/')({
   component: TodayPage,
 });
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
-}
 
 function TodayPage() {
   const { brand } = useBrand();
@@ -33,67 +24,37 @@ function TodayPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {getGreeting()}
+          Welcome to respin.hub
         </h1>
         <p className="text-sm text-muted-foreground mt-1">{today} — {brand.name}</p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="Content Velocity"
-          value="12"
-          change="+3 this week"
-          icon={<FileText className="h-5 w-5" />}
-        />
-        <MetricCard
-          label="Active Campaigns"
-          value="4"
-          change="2 launching soon"
-          icon={<Target className="h-5 w-5" />}
-        />
-        <MetricCard
-          label="SEO Keywords"
-          value="38"
-          change="5 new opportunities"
-          icon={<TrendingUp className="h-5 w-5" />}
-        />
-        <MetricCard
-          label="Brands Active"
-          value="4"
-          change="All on track"
-          icon={<Zap className="h-5 w-5" />}
-        />
-      </div>
+      {/* Metrics — empty state */}
+      <Card className="border-border/50 bg-card/40">
+        <CardContent className="py-10 flex flex-col items-center justify-center text-center gap-3">
+          <LayoutGrid className="h-8 w-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">
+            Live metrics will appear here once integrations are connected.
+          </p>
+        </CardContent>
+      </Card>
 
-      {/* Priority Actions */}
+      {/* Priority Actions — empty state */}
       <div>
         <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-4">
           Recommended next actions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <PriorityCard
-            title="Draft Kiki's TikTok teaser"
-            description="Phase 1 launches this week. Character post needed for the opening salvo."
-            brand="Kiki's Casino"
-            brandAccent={BRANDS.kikis.accent}
-            action="Open Content Studio"
-          />
-          <PriorityCard
-            title="Review SEO keyword gaps"
-            description="3 high-volume keywords with low competition identified for Orion's."
-            brand="Orion's Fortune"
-            brandAccent={BRANDS.orions.accent}
-            action="View SEO Intel"
-          />
-          <PriorityCard
-            title="Build FTD welcome flow"
-            description="72-hour critical window. Retention calendar needs crypto FTD sequence."
-            brand="Kiki's Casino"
-            brandAccent={BRANDS.kikis.accent}
-            action="Open CRM"
-          />
-        </div>
+        <Card className="border-border/50 bg-card/40">
+          <CardContent className="py-10 flex flex-col items-center justify-center text-center gap-3">
+            <Sparkles className="h-8 w-8 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">
+              Your recommended actions will appear here as you use the platform.
+            </p>
+            <Link to="/content" className="text-xs text-primary hover:underline mt-1">
+              Start by creating content →
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -105,9 +66,18 @@ function TodayPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            {SEED_ACTIVITY.slice(0, 6).map((entry, i) => (
-              <ActivityItem key={i} entry={entry} />
-            ))}
+            {SEED_ACTIVITY.length > 0 ? (
+              SEED_ACTIVITY.slice(0, 6).map((entry, i) => (
+                <ActivityItem key={i} entry={entry} />
+              ))
+            ) : (
+              <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
+                <Activity className="h-6 w-6 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">
+                  No activity yet — generate your first piece of content.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -123,31 +93,40 @@ function TodayPage() {
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="pt-0 space-y-3">
-            {CAMPAIGN_CALENDAR.slice(0, 4).map((campaign, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span
-                    className="h-2 w-2 rounded-full shrink-0"
-                    style={{ backgroundColor: Object.values(BRANDS).find(b => b.short === campaign.brand)?.accent }}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm text-foreground truncate">{campaign.activity}</p>
-                    <p className="text-xs text-muted-foreground">{campaign.brand} · {campaign.period}</p>
+          <CardContent className="pt-0">
+            {CAMPAIGN_CALENDAR.length > 0 ? (
+              <div className="space-y-3">
+                {CAMPAIGN_CALENDAR.slice(0, 4).map((campaign, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ backgroundColor: Object.values(BRANDS).find(b => b.short === campaign.brand)?.accent }}
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm text-foreground truncate">{campaign.activity}</p>
+                        <p className="text-xs text-muted-foreground">{campaign.brand} · {campaign.period}</p>
+                      </div>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] shrink-0 ${
+                        campaign.status === 'Active'
+                          ? 'border-primary/40 text-primary'
+                          : 'border-border text-muted-foreground'
+                      }`}
+                    >
+                      {campaign.status}
+                    </Badge>
                   </div>
-                </div>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] shrink-0 ${
-                    campaign.status === 'Active'
-                      ? 'border-primary/40 text-primary'
-                      : 'border-border text-muted-foreground'
-                  }`}
-                >
-                  {campaign.status}
-                </Badge>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
+                <CalendarDays className="h-6 w-6 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">No campaigns scheduled.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
