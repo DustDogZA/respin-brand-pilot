@@ -1,54 +1,70 @@
 
 
-# Remove All Placeholder/Dummy Data
+# Shared Activity Log — Plan
 
-## What's changing
+## Summary
 
-The app currently has hardcoded fake data that simulates activity. This plan removes it all and replaces affected areas with clean empty states that guide the user to take real action.
+Create a React context + localStorage-backed activity log. Every successful AI generation writes an entry. The Today dashboard and Reporting page consume it live.
 
-## Dummy data identified
+## New Files
 
-1. **`SEED_ACTIVITY`** in `src/data/activity.ts` — 10 fake activity log entries ("2h ago", "1d ago", etc.)
-2. **`CAMPAIGN_CALENDAR`** in `src/data/activity.ts` — 6 fake campaign entries with hardcoded dates
-3. **Hardcoded metrics** on the Today page — "12" content velocity, "4" active campaigns, "38" SEO keywords, "4" brands active
-4. **Hardcoded priority cards** on the Today page — 3 fake recommended actions
+### 1. `src/context/ActivityLogContext.tsx`
 
-## What stays (not placeholder)
+React context provider with:
+- **State**: `ActivityLogEntry[]` stored in localStorage under key `respin_activity_log`
+- **Entry shape**: `{ id: string, brand: string, toolName: string, type: 'acq'|'ret'|'crm'|'intel'|'content'|'lore', outputPreview: string, timestamp: string, fullOutput: string }`
+- **`addEntry(entry)`**: prepends entry, caps at 50 (removes oldest), writes to localStorage
+- **`entries`**: the current log array
+- Hydration-safe: reads localStorage only on mount (client-side), not during SSR
+- Generate unique IDs with `crypto.randomUUID()`
 
-- Brand definitions in `src/data/brands.ts` — real brand data (canons, accents, channels)
-- Tool definitions in `src/data/tools.ts` — real tool configurations
-- CRM intelligence metrics on the CRM page — real iGaming domain knowledge
-- "Coming Soon" badges on SEO page — roadmap indicators, not fake data
-- Integration list on Settings — real planned integrations
+### 2. Wire provider into `src/routes/_app.tsx`
 
-## Changes
+Wrap the layout's children with `<ActivityLogProvider>`.
 
-### 1. `src/data/activity.ts`
-- Remove `SEED_ACTIVITY` array contents (keep as empty array `[]`)
-- Remove `CAMPAIGN_CALENDAR` array contents (keep as empty array `[]`)
-- Keep the interfaces and `TYPE_LABELS` — they're used for real data later
+## Modified Files
 
-### 2. `src/routes/_app.index.tsx` (Today page)
-- Remove the 4 hardcoded `MetricCard` components with fake numbers
-- Remove the 3 hardcoded `PriorityCard` components
-- Replace metrics section with a subtle "Connect integrations to see live data" prompt
-- Replace priority actions with an empty state: "Your recommended actions will appear here as you use the platform"
-- Activity feed: show empty state "No activity yet — generate your first piece of content"
-- Campaign calendar: show empty state "No campaigns scheduled"
+### 3. `src/routes/_app.content.tsx`
 
-### 3. `src/routes/_app.campaigns.tsx`
-- The table will naturally be empty since `CAMPAIGN_CALENDAR` is now `[]`
-- Add an empty state message: "No campaigns yet. Create your first campaign to get started."
+After successful generation (`result.text` is non-empty, no error):
+```ts
+addEntry({ brand: brand.short, toolName: selectedTool.name, type: selectedTool.acq ? 'acq' : 'content', ... })
+```
+Import and use `useActivityLog()` from context.
 
-### 4. `src/routes/_app.reporting.tsx`
-- Already handles empty state (line 70: "No matching activity")
-- Will naturally show empty since `SEED_ACTIVITY` is now `[]`
+### 4. `src/routes/_app.crm.tsx`
 
-### 5. `src/components/MetricCard.tsx` and `src/components/PriorityCard.tsx`
-- Keep the components — they'll be used when real data is connected
-- No changes needed to the components themselves
+Same pattern, `type: 'crm'`.
 
-## Result
+### 5. `src/routes/_app.seo.tsx`
 
-Every screen starts clean. The app feels honest — no fake numbers, no simulated history. Empty states guide the user toward real usage (Content Studio, CRM tools, SEO tools) which are the functional parts of the app.
+Same pattern, `type: 'intel'`.
+
+### 6. `src/routes/_app.index.tsx` (Today dashboard)
+
+- Replace the empty metrics card with 4 `MetricCard` components:
+  - Content Velocity = `entries.length`
+  - Active Campaigns = entries where type is `acq` or `ret`
+  - Brands Active = `4` (hardcoded)
+  - SEO Keywords = entries where type is `intel`
+- Replace priority actions empty state with 2 most recent entries as cards showing brand accent dot, brand name, tool name, preview text, and "View in Reporting" link
+- Recent Activity section: show last 6 entries from the log instead of `SEED_ACTIVITY`
+
+### 7. `src/routes/_app.reporting.tsx`
+
+- Replace `SEED_ACTIVITY` usage with `useActivityLog().entries`
+- Filter tabs: All / Content / CRM / SEO (Content = `acq|ret|lore|content`, CRM = `crm`, SEO = `intel`)
+- Each entry shows: brand name in accent color, type badge, tool name, output preview, relative timestamp
+- "Copy output" button per entry that copies `fullOutput`
+- Empty state: "No activity yet — generate your first piece of content"
+
+### 8. `src/components/ActivityItem.tsx`
+
+Update to accept the new `ActivityLogEntry` shape (or create a new `ReportingActivityItem` component). Display tool name, type badge, relative timestamp (computed from ISO string), and copy button.
+
+## Technical Details
+
+- **Relative time**: Simple helper — computes "just now", "X minutes ago", "X hours ago", "X days ago" from ISO timestamp
+- **Type mapping for tools**: Content tools use `acq` if `tool.acq === true`, else `content`. CRM tools → `crm`. SEO tools → `intel`.
+- **SSR safety**: localStorage reads wrapped in `typeof window !== 'undefined'` check; initial state is `[]` during SSR
 
