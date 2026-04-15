@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { BrandProvider } from '@/context/BrandContext';
 import { ActivityLogProvider } from '@/context/ActivityLogContext';
 import { TopNav } from '@/components/TopNav';
