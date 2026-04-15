@@ -74,10 +74,6 @@ export function AllBrandsOverview() {
             <span className="font-semibold">{totalPieces}</span>
             <span className="text-muted-foreground ml-1.5">pieces this week</span>
           </span>
-          <span className="glass-panel px-3.5 py-1.5 text-[12px] font-medium text-foreground">
-            <span className="font-semibold">3</span>
-            <span className="text-muted-foreground ml-1.5">actions needed</span>
-          </span>
         </div>
       </div>
 
