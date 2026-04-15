@@ -24,7 +24,7 @@ interface BrandContextType {
 const BrandContext = createContext<BrandContextType | null>(null);
 
 export function BrandProvider({ children }: { children: ReactNode }) {
-  const [activeBrandId, setActiveBrandId] = useState('kikis');
+  const [activeBrandId, setActiveBrandId] = useState('all');
   const [canonOverrides, setCanonOverrides] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function BrandProvider({ children }: { children: ReactNode }) {
     return canonOverrides[id] ? { ...base, canon: canonOverrides[id] } : base;
   };
 
-  const brand = getBrand(activeBrandId);
+  const brand = activeBrandId === 'all' ? getBrand('kikis') : getBrand(activeBrandId);
 
   const updateCanon = (brandId: string, canon: string) => {
     if (typeof window !== 'undefined') {

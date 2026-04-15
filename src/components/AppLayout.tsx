@@ -1,26 +1,18 @@
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/AppSidebar';
 import { BrandProvider } from '@/context/BrandContext';
 import { ActivityLogProvider } from '@/context/ActivityLogContext';
+import { TopNav } from '@/components/TopNav';
 import { Outlet } from '@tanstack/react-router';
 
 export function AppLayout() {
   return (
     <BrandProvider>
       <ActivityLogProvider>
-        <SidebarProvider>
-          <div className="min-h-screen flex w-full">
-            <AppSidebar />
-            <div className="flex-1 flex flex-col min-w-0">
-              <header className="h-12 flex items-center border-b border-[0.5px] border-border px-4 shrink-0">
-                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-              </header>
-              <main className="flex-1 overflow-auto">
-                <Outlet />
-              </main>
-            </div>
-          </div>
-        </SidebarProvider>
+        <div className="min-h-screen flex flex-col w-full">
+          <TopNav />
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
       </ActivityLogProvider>
     </BrandProvider>
   );
