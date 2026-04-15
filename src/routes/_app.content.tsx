@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Copy, Sparkles, Loader2 } from 'lucide-react';
+import { PageHero } from '@/components/PageHero';
 import { generateContent } from '@/utils/ai.functions';
 import { buildContentPrompt } from '@/utils/prompts';
 
@@ -195,6 +196,7 @@ function ContentPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

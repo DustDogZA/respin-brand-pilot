@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Copy, Sparkles, Loader2 } from 'lucide-react';
+import { PageHero } from '@/components/PageHero';
 import { generateContent } from '@/utils/ai.functions';
 import { buildSeoPrompt } from '@/utils/prompts';
 
@@ -142,11 +143,9 @@ function SeoPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">SEO Intelligence</h1>
-        <p className="text-[13px] text-muted-foreground mt-1">Ahrefs-powered keyword research, competitor analysis & SERP intelligence — {brand.name}</p>
-      </div>
+    <div>
+      <PageHero page="seo" />
+      <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
 
       <div>
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">Intelligence Tools</h2>
@@ -181,6 +180,7 @@ function SeoPage() {
             </Card>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
