@@ -1,13 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useServerFn } from '@tanstack/react-start';
 import { useBrand } from '@/context/BrandContext';
 import { ToolCard } from '@/components/ToolCard';
-import { CRM_TOOLS, CRM_KNOWLEDGE, type Tool, type ToolField } from '@/data/tools';
+import { CRM_TOOLS, type Tool } from '@/data/tools';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Copy, Sparkles } from 'lucide-react';
+import { ArrowLeft, Copy, Sparkles, Loader2 } from 'lucide-react';
+import { generateContent } from '@/utils/ai.functions';
+import { buildCrmPrompt } from '@/utils/prompts';
 
 export const Route = createFileRoute('/_app/crm')({
   component: CrmPage,
@@ -18,11 +21,27 @@ function CrmPage() {
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const generateFn = useServerFn(generateContent);
 
   const handleBack = () => { setSelectedTool(null); setInputs({}); setOutput(''); };
 
-  const handleGenerate = () => {
-    setOutput(`## CRM Output\n\nAI generation will be connected in the next phase.\n\n---\n\nTool: ${selectedTool?.name}\nBrand: ${brand.name}\nMode: ${brand.mode}\n\n${Object.entries(inputs).map(([k, v]) => `- ${k}: ${v}`).join('\n')}`);
+  const handleGenerate = async () => {
+    if (!selectedTool) return;
+    setLoading(true);
+    setOutput('');
+    try {
+      const { system, user } = buildCrmPrompt(brand, selectedTool, inputs);
+      const result = await generateFn({
+        data: { systemPrompt: system, userPrompt: user, maxTokens: 1800 },
+      });
+      setOutput(result.text);
+    } catch (e) {
+      setOutput(`Something went wrong: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (selectedTool) {
@@ -49,7 +68,7 @@ function CrmPage() {
                   <label className="text-xs font-medium text-muted-foreground">{field.label}</label>
                   {field.type === 'select' ? (
                     <Select value={inputs[field.id] || ''} onValueChange={(v) => setInputs((p) => ({ ...p, [field.id]: v }))}>
-                      <SelectTrigger className="bg-background/50"><SelectValue placeholder={`Select…`} /></SelectTrigger>
+                      <SelectTrigger className="bg-background/50"><SelectValue placeholder="Select…" /></SelectTrigger>
                       <SelectContent>
                         {field.options?.map((opt) => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                       </SelectContent>
@@ -59,8 +78,12 @@ function CrmPage() {
                   )}
                 </div>
               ))}
-              <Button onClick={handleGenerate} className="w-full mt-2">
-                <Sparkles className="h-4 w-4 mr-2" /> Generate
+              <Button onClick={handleGenerate} className="w-full mt-2" disabled={loading}>
+                {loading ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…</>
+                ) : (
+                  <><Sparkles className="h-4 w-4 mr-2" /> Generate</>
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -68,19 +91,17 @@ function CrmPage() {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Output</CardTitle>
-                {output && <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-foreground"><Copy className="h-4 w-4" /></button>}
+                {output && !loading && <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-foreground"><Copy className="h-4 w-4" /></button>}
               </div>
             </CardHeader>
             <CardContent>
-              {output ? (
-                <div className="space-y-1">
-                  {output.split('\n').map((line, i) => {
-                    if (line.startsWith('## ')) return <h3 key={i} className="text-xs font-semibold uppercase tracking-wider text-primary mt-4 mb-2 border-b border-primary/20 pb-1">{line.slice(3)}</h3>;
-                    if (line.startsWith('- ')) return <div key={i} className="flex gap-2 text-sm mb-1"><span className="text-primary">—</span><span>{line.slice(2)}</span></div>;
-                    if (line === '---') return <hr key={i} className="border-border/30 my-3" />;
-                    if (line.trim() === '') return <div key={i} className="h-2" />;
-                    return <p key={i} className="text-sm text-foreground/90 leading-relaxed">{line}</p>;
-                  })}
+              {loading ? (
+                <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Working…
+                </div>
+              ) : output ? (
+                <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap text-sm text-foreground/90 leading-relaxed">
+                  {output}
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-48 text-sm text-muted-foreground/60">Output will appear here</div>
@@ -101,7 +122,6 @@ function CrmPage() {
         </p>
       </div>
 
-      {/* CRM Knowledge Panel */}
       <Card className="border-border/50 bg-card/30">
         <CardHeader className="pb-3">
           <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">iGaming CRM Intelligence</CardTitle>
