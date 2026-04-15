@@ -1,77 +1,54 @@
 
 
-# Wire Up AI Generation — Plan
+# Remove All Placeholder/Dummy Data
 
-## Summary
+## What's changing
 
-Replace the placeholder `handleGenerate` functions in Content, CRM, and SEO pages with real AI generation via the Lovable AI Gateway, using a server function as the backend.
+The app currently has hardcoded fake data that simulates activity. This plan removes it all and replaces affected areas with clean empty states that guide the user to take real action.
 
-## Architecture
+## Dummy data identified
 
-```text
-Route Page (client)
-  → createServerFn (server-side, holds LOVABLE_API_KEY)
-    → Lovable AI Gateway (https://ai.gateway.lovable.dev/v1/chat/completions)
-  ← returns generated text
-  → displayed in output panel
-```
+1. **`SEED_ACTIVITY`** in `src/data/activity.ts` — 10 fake activity log entries ("2h ago", "1d ago", etc.)
+2. **`CAMPAIGN_CALENDAR`** in `src/data/activity.ts` — 6 fake campaign entries with hardcoded dates
+3. **Hardcoded metrics** on the Today page — "12" content velocity, "4" active campaigns, "38" SEO keywords, "4" brands active
+4. **Hardcoded priority cards** on the Today page — 3 fake recommended actions
 
-Non-streaming for simplicity (matches the user's request). The server function reads `LOVABLE_API_KEY` from environment — already provisioned.
+## What stays (not placeholder)
 
-## Files to Create/Modify
+- Brand definitions in `src/data/brands.ts` — real brand data (canons, accents, channels)
+- Tool definitions in `src/data/tools.ts` — real tool configurations
+- CRM intelligence metrics on the CRM page — real iGaming domain knowledge
+- "Coming Soon" badges on SEO page — roadmap indicators, not fake data
+- Integration list on Settings — real planned integrations
 
-### 1. Create `src/utils/ai.functions.ts` — shared server function
+## Changes
 
-A single `generateContent` server function that accepts:
-- `systemPrompt: string` — tool-specific system prompt with brand canon and CRM knowledge
-- `userPrompt: string` — the user's configured inputs
-- `maxTokens: number` — varies by tool type (1200 for content, 1800 for CRM/SEO)
+### 1. `src/data/activity.ts`
+- Remove `SEED_ACTIVITY` array contents (keep as empty array `[]`)
+- Remove `CAMPAIGN_CALENDAR` array contents (keep as empty array `[]`)
+- Keep the interfaces and `TYPE_LABELS` — they're used for real data later
 
-Uses `createServerFn({ method: "POST" })` with input validation. Calls the Lovable AI Gateway with `google/gemini-3-flash-preview`. Returns the text content or an error message string.
+### 2. `src/routes/_app.index.tsx` (Today page)
+- Remove the 4 hardcoded `MetricCard` components with fake numbers
+- Remove the 3 hardcoded `PriorityCard` components
+- Replace metrics section with a subtle "Connect integrations to see live data" prompt
+- Replace priority actions with an empty state: "Your recommended actions will appear here as you use the platform"
+- Activity feed: show empty state "No activity yet — generate your first piece of content"
+- Campaign calendar: show empty state "No campaigns scheduled"
 
-### 2. Create `src/utils/prompts.ts` — prompt builders
+### 3. `src/routes/_app.campaigns.tsx`
+- The table will naturally be empty since `CAMPAIGN_CALENDAR` is now `[]`
+- Add an empty state message: "No campaigns yet. Create your first campaign to get started."
 
-Three prompt builder functions, one per tool category:
+### 4. `src/routes/_app.reporting.tsx`
+- Already handles empty state (line 70: "No matching activity")
+- Will naturally show empty since `SEED_ACTIVITY` is now `[]`
 
-- **`buildContentPrompt(brand, tool, inputs)`** — System prompt includes the brand canon, character voice rules, and tool-specific instructions (e.g. "Write a character post for TikTok"). User prompt assembles the field inputs.
+### 5. `src/components/MetricCard.tsx` and `src/components/PriorityCard.tsx`
+- Keep the components — they'll be used when real data is connected
+- No changes needed to the components themselves
 
-- **`buildCrmPrompt(brand, tool, inputs)`** — System prompt includes brand canon + `CRM_KNOWLEDGE` constant. Tool-specific instructions for segment building, lifecycle mapping, bonus design, or retention calendars.
+## Result
 
-- **`buildSeoPrompt(brand, tool, inputs)`** — System prompt positions the AI as an iGaming SEO strategist. Includes brand context. Note that Ahrefs live data is not available — AI provides strategic analysis from training knowledge.
-
-Each returns `{ system: string, user: string }`.
-
-### 3. Modify `src/routes/_app.content.tsx`
-
-- Import `generateContent` server function and `buildContentPrompt`
-- Add `loading` state (`useState<boolean>(false)`)
-- Replace `handleGenerate` placeholder with async function that:
-  1. Builds prompts via `buildContentPrompt(brand, selectedTool, inputs)`
-  2. Calls `generateContent({ data: { systemPrompt, userPrompt, maxTokens: 1200 } })`
-  3. Sets output from response
-- Update button to show "Generating..." state and disable while loading
-- Use `useServerFn` hook for the server function call
-
-### 4. Modify `src/routes/_app.crm.tsx`
-
-Same pattern as content but uses `buildCrmPrompt` and `maxTokens: 1800`.
-
-### 5. Modify `src/routes/_app.seo.tsx`
-
-Same pattern as content but uses `buildSeoPrompt` and `maxTokens: 1800`. Button says "Analyzing..." while loading.
-
-## Prompt Design (Key Details)
-
-**Content tools** — System prompt example for "Character Post":
-> You are {character} from {brand.name}. {brand.canon}. Write a {platform} post about {topic}. Stay fully in character. {tone_note if provided}.
-
-**CRM tools** — System prompt includes full CRM_KNOWLEDGE block plus brand context. Tool-specific instructions vary (e.g. Segment Builder asks for cohort definition with psychology, triggers, offer sensitivity).
-
-**SEO tools** — System prompt positions as iGaming SEO strategist with brand context. Notes that live Ahrefs data is unavailable; provide strategic analysis from knowledge.
-
-## Error Handling
-
-- Server function catches fetch errors and returns descriptive error strings
-- 429 (rate limit) and 402 (payment required) are caught and surfaced as user-friendly messages
-- Client shows error text in the output panel (no blank screens)
+Every screen starts clean. The app feels honest — no fake numbers, no simulated history. Empty states guide the user toward real usage (Content Studio, CRM tools, SEO tools) which are the functional parts of the app.
 
