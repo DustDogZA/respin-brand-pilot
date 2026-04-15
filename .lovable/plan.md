@@ -1,70 +1,39 @@
 
 
-# Shared Activity Log — Plan
+# Editable Brand Canon — Plan
 
 ## Summary
 
-Create a React context + localStorage-backed activity log. Every successful AI generation writes an entry. The Today dashboard and Reporting page consume it live.
+Replace the read-only canon toggle with an inline editor that persists canon overrides to localStorage and updates the brand context so all generation prompts use the edited canon.
 
-## New Files
+## Changes
 
-### 1. `src/context/ActivityLogContext.tsx`
+### 1. `src/context/BrandContext.tsx`
 
-React context provider with:
-- **State**: `ActivityLogEntry[]` stored in localStorage under key `respin_activity_log`
-- **Entry shape**: `{ id: string, brand: string, toolName: string, type: 'acq'|'ret'|'crm'|'intel'|'content'|'lore', outputPreview: string, timestamp: string, fullOutput: string }`
-- **`addEntry(entry)`**: prepends entry, caps at 50 (removes oldest), writes to localStorage
-- **`entries`**: the current log array
-- Hydration-safe: reads localStorage only on mount (client-side), not during SSR
-- Generate unique IDs with `crypto.randomUUID()`
+- Add state: `canonOverrides: Record<string, string>` initialized from localStorage keys `respin_canon_[brandId]`
+- Add function: `updateCanon(brandId: string, canon: string)` — saves to localStorage and updates state
+- Expose a `getBrand(id: string)` helper that returns the brand with canon override applied
+- Change `brand` derivation to merge the override: `{ ...BRANDS[activeBrandId], canon: canonOverrides[activeBrandId] ?? BRANDS[activeBrandId].canon }`
+- Export `canonOverrides` and `updateCanon` in context type
 
-### 2. Wire provider into `src/routes/_app.tsx`
+### 2. `src/routes/_app.brands.tsx`
 
-Wrap the layout's children with `<ActivityLogProvider>`.
+- Import `useBrand` context and `Textarea` component, `Button`, and `toast` from sonner
+- Add local state per card: `editingId: string | null` and `draftCanon: string`
+- Replace the `<details>` block with:
+  - When not editing: "Edit canon" button
+  - When editing: Textarea (min-h-[200px], pre-filled with current canon), Save and Cancel buttons
+- Save calls `updateCanon(brand.id, draftCanon)`, shows `toast("Canon saved")`, collapses editor
+- Cancel resets draft and collapses
+- Display canon text comes from context (with override applied), not raw `BRANDS`
 
-## Modified Files
+### 3. Prompt propagation
 
-### 3. `src/routes/_app.content.tsx`
+Already works — `useBrand().brand` is used in Content, CRM, and SEO pages to build prompts. Since we're updating the canon in the context's brand object, all prompts automatically get the updated canon. The brands page will also need to read brands through context to show overridden canons.
 
-After successful generation (`result.text` is non-empty, no error):
-```ts
-addEntry({ brand: brand.short, toolName: selectedTool.name, type: selectedTool.acq ? 'acq' : 'content', ... })
-```
-Import and use `useActivityLog()` from context.
+## Technical Notes
 
-### 4. `src/routes/_app.crm.tsx`
-
-Same pattern, `type: 'crm'`.
-
-### 5. `src/routes/_app.seo.tsx`
-
-Same pattern, `type: 'intel'`.
-
-### 6. `src/routes/_app.index.tsx` (Today dashboard)
-
-- Replace the empty metrics card with 4 `MetricCard` components:
-  - Content Velocity = `entries.length`
-  - Active Campaigns = entries where type is `acq` or `ret`
-  - Brands Active = `4` (hardcoded)
-  - SEO Keywords = entries where type is `intel`
-- Replace priority actions empty state with 2 most recent entries as cards showing brand accent dot, brand name, tool name, preview text, and "View in Reporting" link
-- Recent Activity section: show last 6 entries from the log instead of `SEED_ACTIVITY`
-
-### 7. `src/routes/_app.reporting.tsx`
-
-- Replace `SEED_ACTIVITY` usage with `useActivityLog().entries`
-- Filter tabs: All / Content / CRM / SEO (Content = `acq|ret|lore|content`, CRM = `crm`, SEO = `intel`)
-- Each entry shows: brand name in accent color, type badge, tool name, output preview, relative timestamp
-- "Copy output" button per entry that copies `fullOutput`
-- Empty state: "No activity yet — generate your first piece of content"
-
-### 8. `src/components/ActivityItem.tsx`
-
-Update to accept the new `ActivityLogEntry` shape (or create a new `ReportingActivityItem` component). Display tool name, type badge, relative timestamp (computed from ISO string), and copy button.
-
-## Technical Details
-
-- **Relative time**: Simple helper — computes "just now", "X minutes ago", "X hours ago", "X days ago" from ISO timestamp
-- **Type mapping for tools**: Content tools use `acq` if `tool.acq === true`, else `content`. CRM tools → `crm`. SEO tools → `intel`.
-- **SSR safety**: localStorage reads wrapped in `typeof window !== 'undefined'` check; initial state is `[]` during SSR
+- localStorage keys: `respin_canon_kikis`, `respin_canon_throne`, `respin_canon_orions`, `respin_canon_chur`
+- SSR-safe: localStorage reads wrapped in `typeof window !== 'undefined'`
+- The Brands page iterates `Object.values(BRANDS)` but applies canon overrides from context for display
 
