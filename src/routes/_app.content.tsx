@@ -71,10 +71,10 @@ function ContentPage() {
 
   if (selectedTool) {
     return (
-      <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+      <div className="p-5 md:p-8 max-w-5xl mx-auto space-y-6">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-[13px] text-muted-foreground hover:text-foreground transition-premium bg-transparent border-none cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to tools
@@ -83,19 +83,17 @@ function ContentPage() {
         <div className="flex items-center gap-3">
           <span className="text-2xl">{selectedTool.icon}</span>
           <div>
-            <h1 className="text-xl font-extrabold tracking-[-0.03em] text-foreground">
+            <h1 className="text-[18px] font-semibold tracking-[-0.02em] text-foreground">
               {selectedTool.name}
             </h1>
             <p className="text-[13px] text-muted-foreground">{selectedTool.desc}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                Configure
-              </CardTitle>
+              <CardTitle className="text-metadata text-muted-foreground">Configure</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {selectedTool.fields.map((field) => (
@@ -106,11 +104,7 @@ function ContentPage() {
                   onChange={(v) => setInputs((prev) => ({ ...prev, [field.id]: v }))}
                 />
               ))}
-              <Button
-                onClick={handleGenerate}
-                className="w-full mt-2"
-                disabled={Object.keys(inputs).length === 0 || loading}
-              >
+              <Button onClick={handleGenerate} className="w-full mt-2" disabled={Object.keys(inputs).length === 0 || loading}>
                 {loading ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…</>
                 ) : (
@@ -123,14 +117,9 @@ function ContentPage() {
           <Card>
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Output
-                </CardTitle>
+                <CardTitle className="text-metadata text-muted-foreground">Output</CardTitle>
                 {output && !loading && (
-                  <button
-                    onClick={() => navigator.clipboard.writeText(output)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
+                  <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-foreground transition-premium bg-transparent border-none cursor-pointer">
                     <Copy className="h-4 w-4" />
                   </button>
                 )}
@@ -138,7 +127,7 @@ function ContentPage() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground">
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Working…
                 </div>
               ) : output ? (
@@ -146,7 +135,7 @@ function ContentPage() {
                   {output}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground/60">
+                <div className="flex items-center justify-center h-48 text-[13px] text-muted-foreground">
                   Output will appear here
                 </div>
               )}
@@ -160,86 +149,59 @@ function ContentPage() {
   return (
     <div>
       <PageHero page="content" />
-      <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-
-      {brand.mode === 'campaign' && (
-        <>
-          <div>
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3 flex items-center gap-2">
-              Campaign Tools
-              <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">{brand.short}</Badge>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {CAMPAIGN_TOOLS.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
-              ))}
+      <div className="p-5 md:p-8 max-w-6xl mx-auto space-y-6">
+        {brand.mode === 'campaign' && (
+          <>
+            <div>
+              <h2 className="text-metadata text-muted-foreground mb-3 flex items-center gap-2">
+                Campaign Tools
+                <Badge variant="outline" className="text-[10px]">{brand.short}</Badge>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {CAMPAIGN_TOOLS.map((tool) => (
+                  <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div>
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">
-              Community Tools (CHUR.BET)
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {COMMUNITY_TOOLS.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
-              ))}
+            <div>
+              <h2 className="text-metadata text-muted-foreground mb-3">Community Tools (CHUR.BET)</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {COMMUNITY_TOOLS.map((tool) => (
+                  <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
+                ))}
+              </div>
             </div>
+          </>
+        )}
+        {brand.mode === 'community' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {COMMUNITY_TOOLS.map((tool) => (
+              <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
+            ))}
           </div>
-        </>
-      )}
-
-      {brand.mode === 'community' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {COMMUNITY_TOOLS.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} onClick={() => handleToolSelect(tool)} />
-          ))}
-        </div>
-      )}
+        )}
       </div>
     </div>
   );
 }
 
-function FieldInput({
-  field,
-  value,
-  onChange,
-}: {
-  field: ToolField;
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function FieldInput({ field, value, onChange }: { field: ToolField; value: string; onChange: (v: string) => void }) {
   return (
     <div className="space-y-1.5">
       <label className="text-[11px] font-medium text-muted-foreground">{field.label}</label>
       {field.type === 'select' ? (
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className="bg-background/50 rounded-full">
-            <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
-          </SelectTrigger>
+          <SelectTrigger className="rounded-xl"><SelectValue placeholder={`Select ${field.label.toLowerCase()}`} /></SelectTrigger>
           <SelectContent>
             {field.options?.map((opt, i) => (
-              <SelectItem key={opt} value={opt}>
-                {field.labels?.[i] || opt}
-              </SelectItem>
+              <SelectItem key={opt} value={opt}>{field.labels?.[i] || opt}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       ) : field.type === 'textarea' ? (
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder}
-          className="bg-background/50 min-h-[100px]"
-        />
+        <Textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} className="min-h-[100px] rounded-xl" />
       ) : (
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder}
-          className="bg-background/50 rounded-full"
-        />
+        <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} />
       )}
     </div>
   );

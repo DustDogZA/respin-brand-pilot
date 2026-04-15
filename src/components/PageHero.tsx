@@ -1,10 +1,10 @@
 import { useBrand } from '@/context/BrandContext';
 
 const ACCENT_MAP: Record<string, string> = {
-  kikis: 'rgba(201,168,76,0.15)',
-  throne: 'rgba(160,25,47,0.15)',
-  orions: 'rgba(61,139,205,0.15)',
-  chur: 'rgba(107,143,113,0.15)',
+  kikis: '#c9a84c',
+  throne: '#a0192f',
+  orions: '#3d8bcd',
+  chur: '#6b8f71',
 };
 
 const PAGE_NAMES: Record<string, string> = {
@@ -18,51 +18,35 @@ function getHeading(page: string, brand: { mode: string; character: string }) {
   if (page === 'crm') {
     return brand.mode === 'community' ? 'Design the community machine.' : 'Design the retention machine.';
   }
-  // content
   return brand.mode === 'community' ? 'Build community content.' : `Write as ${brand.character}.`;
 }
 
 export function PageHero({ page }: { page: 'content' | 'crm' | 'seo' }) {
   const { brand } = useBrand();
-  const accentColor = ACCENT_MAP[brand.id] || ACCENT_MAP.chur;
+  const accent = ACCENT_MAP[brand.id] || ACCENT_MAP.chur;
 
   return (
-    <div style={{ background: '#0d1b2a', padding: '24px 24px 28px', position: 'relative', overflow: 'hidden' }}>
-      {/* Decorative accent circle */}
+    <div
+      className="relative overflow-hidden px-6 lg:px-8 pt-8 pb-10"
+      style={{
+        background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 6%, transparent), transparent 70%)`,
+      }}
+    >
+      {/* Decorative accent element */}
       <div
+        className="absolute pointer-events-none rounded-full"
         style={{
-          position: 'absolute',
           right: -40,
           top: -40,
           width: 200,
           height: 200,
-          borderRadius: '50%',
-          background: accentColor,
-          pointerEvents: 'none',
+          background: `color-mix(in srgb, ${accent} 8%, transparent)`,
         }}
       />
-      <p
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: 'rgba(245,243,238,0.45)',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginBottom: 4,
-        }}
-      >
+      <p className="text-metadata text-muted-foreground mb-1.5">
         {PAGE_NAMES[page]} — {brand.name}
       </p>
-      <h1
-        style={{
-          fontSize: 36,
-          fontWeight: 900,
-          letterSpacing: '-0.04em',
-          color: '#f5f3ee',
-          lineHeight: 1.05,
-          margin: 0,
-        }}
-      >
+      <h1 className="text-page-title text-foreground">
         {getHeading(page, brand)}
       </h1>
     </div>

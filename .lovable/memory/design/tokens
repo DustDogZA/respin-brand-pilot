@@ -1,12 +1,17 @@
 ---
-name: Design tokens — warm light theme
-description: Light theme with warm off-white bg, white cards, dark navy text, no shadows, pill radii
+name: Design tokens — premium glass system
+description: Light atmospheric glass theme with ice-blue primary, translucent cards, no shadows, rounded-2xl radii
 type: design
 ---
-Background: #f0ede6 (warm off-white). Cards: #ffffff. Primary text: #0d1b2a. Muted: #9b9690. Border: #e0ddd5.
-Primary = #0d1b2a (dark navy). Primary-foreground = #f5f3ee.
-No shadows anywhere — cards defined by 0.5px border.
-Radii: large cards 16px, metric cards 14px, badges/buttons/inputs pill (rounded-full), icon bg 10px.
-Typography: Inter 400-900. Page headings: 28-30px font-extrabold tracking-[-0.03em]. Eyebrow labels: 11px font-semibold uppercase tracking-[0.1em]. Metrics: 32px font-black tracking-[-0.04em]. Body: 13px.
-Brand accents unchanged: gold #c9a84c, crimson #a0192f, blue #3d8bcd, sage #6b8f71.
-Light-mode only (no .dark class on html).
+Background: oklch(0.96 0.005 240) with subtle radial blue/cyan atmospheric gradients.
+Cards: rgba(255,255,255,0.72) with backdrop-blur-[12px]. Elevated: rgba(255,255,255,0.85).
+Glass: rgba(255,255,255,0.45) with blur(20px).
+Primary = ice blue oklch(0.62 0.12 240). Primary-foreground = white.
+Text primary: oklch(0.15 0.03 270) (deep graphite). Muted: oklch(0.55 0.02 250).
+Borders: rgba(0,0,0,0.06) thin. No shadows.
+Radii: cards 16px (rounded-2xl), buttons 12px (rounded-xl), badges pill (rounded-full).
+Typography: Inter 400-700. Page titles: 28px font-semibold -0.02em. Metadata: 11px font-medium uppercase 0.04em tracking. KPI: 32px font-bold -0.03em.
+Status: success oklch(0.58 0.12 150), warning oklch(0.72 0.14 70), danger oklch(0.62 0.14 20).
+Brand accents unchanged: gold, crimson, blue, sage.
+Utility classes: .glass-panel, .glass-panel-strong, .transition-premium, .text-page-title, .text-metadata, .text-kpi, .text-nav.
+Light-mode only. Mobile: bottom tab bar, safe area padding.
