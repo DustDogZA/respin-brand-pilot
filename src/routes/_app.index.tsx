@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useBrand } from '@/context/BrandContext';
 import { useActivityLog } from '@/context/ActivityLogContext';
 import { AllBrandsOverview } from '@/components/AllBrandsOverview';
+import { AiAssistant } from '@/components/AiAssistant';
 
 export const Route = createFileRoute('/_app/')({
   component: TodayPage,
@@ -96,46 +97,56 @@ function SingleBrandToday() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5 md:px-8 md:py-6 max-w-5xl">
-        {/* Metric cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="glass-panel p-4">
-            <p className="text-metadata text-muted-foreground mb-1">Content</p>
-            <p className="text-[24px] md:text-[28px] font-bold tracking-[-0.03em] text-foreground leading-none">{contentCount}</p>
-          </div>
-          <div className="glass-panel p-4">
-            <p className="text-metadata text-muted-foreground mb-1">Stage</p>
-            <p className="text-[24px] md:text-[28px] font-bold tracking-[-0.03em] leading-none" style={{ color: accent }}>{stageLabel}</p>
-            <div className="flex gap-1 mt-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="flex-1 h-1 rounded-full"
-                  style={{ background: i < filledSegments ? accent : 'rgba(0,0,0,0.06)' }}
-                />
+      {/* Two-column content */}
+      <div className="p-5 md:px-8 md:py-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-6">
+          {/* Left column — metrics + actions */}
+          <div className="max-w-3xl">
+            {/* Metric cards */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="glass-panel p-4">
+                <p className="text-metadata text-muted-foreground mb-1">Content</p>
+                <p className="text-[24px] md:text-[28px] font-bold tracking-[-0.03em] text-foreground leading-none">{contentCount}</p>
+              </div>
+              <div className="glass-panel p-4">
+                <p className="text-metadata text-muted-foreground mb-1">Stage</p>
+                <p className="text-[24px] md:text-[28px] font-bold tracking-[-0.03em] leading-none" style={{ color: accent }}>{stageLabel}</p>
+                <div className="flex gap-1 mt-2">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex-1 h-1 rounded-full"
+                      style={{ background: i < filledSegments ? accent : 'rgba(0,0,0,0.06)' }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Next actions */}
+            <p className="text-metadata text-muted-foreground mb-3">Next actions</p>
+            <div className="space-y-2">
+              {actions.map((action, i) => (
+                <div key={i} className="glass-panel p-4 flex items-start gap-3">
+                  <div className="flex-1 flex items-start gap-2.5">
+                    <span className="w-[7px] h-[7px] rounded-full mt-1.5 shrink-0" style={{ background: action.dot }} />
+                    <div>
+                      <p className="text-[13px] font-semibold text-foreground mb-0.5">{action.title}</p>
+                      <p className="text-[11px] text-muted-foreground">{action.desc}</p>
+                    </div>
+                  </div>
+                  <Link to={action.link} className="text-[12px] font-semibold text-primary shrink-0 no-underline hover:underline">
+                    {action.linkLabel}
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Next actions */}
-        <p className="text-metadata text-muted-foreground mb-3">Next actions</p>
-        <div className="space-y-2">
-          {actions.map((action, i) => (
-            <div key={i} className="glass-panel p-4 flex items-start gap-3">
-              <div className="flex-1 flex items-start gap-2.5">
-                <span className="w-[7px] h-[7px] rounded-full mt-1.5 shrink-0" style={{ background: action.dot }} />
-                <div>
-                  <p className="text-[13px] font-semibold text-foreground mb-0.5">{action.title}</p>
-                  <p className="text-[11px] text-muted-foreground">{action.desc}</p>
-                </div>
-              </div>
-              <Link to={action.link} className="text-[12px] font-semibold text-primary shrink-0 no-underline hover:underline">
-                {action.linkLabel}
-              </Link>
-            </div>
-          ))}
+          {/* Right column — AI Assistant */}
+          <div className="md:sticky md:top-4">
+            <AiAssistant brand={brand} />
+          </div>
         </div>
       </div>
     </div>
